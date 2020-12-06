@@ -60,6 +60,8 @@ target_sources(imgui_glfw PRIVATE "imgui/examples/imgui_impl_glfw.cpp")
 target_include_directories(imgui_glfw PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/imgui>
     $<INSTALL_INTERFACE:include>)
+find_package(glfw3 REQUIRED)
+target_link_libraries(imgui_glfw PUBLIC glfw)
 
 install(TARGETS imgui_glfw EXPORT imguiTargets)
 install(FILES "imgui/examples/imgui_impl_glfw.h" DESTINATION include/imgui)
