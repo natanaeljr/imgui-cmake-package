@@ -11,7 +11,7 @@ option(IMGUI_DEMO        "Include the ImGui demo window implementation in librar
 # Backend implementation options
 set(IMGUI_PLATF_BACKEND  "" CACHE STRING "Platform backend (only glfw for now)")
 set(IMGUI_RENDER_BACKEND "" CACHE STRING "Graphics Library backend (only opengl for now")
-set(IMGUI_OPENGL_LOADER  "" CACHE STRING "OpenGL loader if selected (only glad for now)")
+set(IMGUI_OPENGL_LOADER  "" CACHE STRING "OpenGL loader if selected (glad or glbinding3)")
 
 # Option validations
 if(IMGUI_PLATF_BACKEND STREQUAL "")
@@ -84,12 +84,20 @@ target_include_directories(imgui_opengl PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/imgui>
     $<INSTALL_INTERFACE:include>)
 
-# Opengl Loader
+# Opengl Loader: GLAD
 if(IMGUI_OPENGL_LOADER STREQUAL "glad")
 message(STATUS "ImGui selected OpenGL Loader: GLAD")
 find_package(glad REQUIRED)
 target_compile_definitions(imgui_opengl PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLAD)
 target_link_libraries(imgui_opengl PUBLIC glad::glad)
+endif()
+
+# Opengl Loader: GLBinding3
+if(IMGUI_OPENGL_LOADER STREQUAL "glbinding3")
+message(STATUS "ImGui selected OpenGL Loader: GLBinding3")
+find_package(glbinding REQUIRED)
+target_compile_definitions(imgui_opengl PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLBINDING3)
+target_link_libraries(imgui_opengl PUBLIC glbinding::glbinding)
 endif()
 
 install(TARGETS imgui_opengl EXPORT imguiTargets)
