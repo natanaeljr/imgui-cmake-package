@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(imgui VERSION 1.79)
+project(imgui VERSION 1.85)
 
 #########################################################################################
 # ImGui Options
@@ -35,6 +35,7 @@ endif()
 target_sources(imgui PRIVATE
     "imgui/imgui.cpp"
     "imgui/imgui_draw.cpp"
+    "imgui/imgui_tables.cpp"
     "imgui/imgui_widgets.cpp"
     "$<$<BOOL:IMGUI_DEMO>:imgui/imgui_demo.cpp>"
 )
@@ -56,7 +57,7 @@ add_library(imgui_glfw SHARED)
 else()
 add_library(imgui_glfw STATIC)
 endif()
-target_sources(imgui_glfw PRIVATE "imgui/examples/imgui_impl_glfw.cpp")
+target_sources(imgui_glfw PRIVATE "imgui/backends/imgui_impl_glfw.cpp")
 target_include_directories(imgui_glfw PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/imgui>
     $<INSTALL_INTERFACE:include>)
@@ -64,7 +65,7 @@ find_package(glfw3 REQUIRED)
 target_link_libraries(imgui_glfw PUBLIC glfw)
 
 install(TARGETS imgui_glfw EXPORT imguiTargets)
-install(FILES "imgui/examples/imgui_impl_glfw.h" DESTINATION include/imgui)
+install(FILES "imgui/backends/imgui_impl_glfw.h" DESTINATION include/imgui)
 
 endif()
 
@@ -79,7 +80,7 @@ add_library(imgui_opengl SHARED)
 else()
 add_library(imgui_opengl STATIC)
 endif()
-target_sources(imgui_opengl PRIVATE "imgui/examples/imgui_impl_opengl3.cpp")
+target_sources(imgui_opengl PRIVATE "imgui/backends/imgui_impl_opengl3.cpp")
 target_include_directories(imgui_opengl PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/imgui>
     $<INSTALL_INTERFACE:include>)
@@ -101,7 +102,7 @@ target_link_libraries(imgui_opengl PUBLIC glbinding::glbinding)
 endif()
 
 install(TARGETS imgui_opengl EXPORT imguiTargets)
-install(FILES "imgui/examples/imgui_impl_opengl3.h" DESTINATION include/imgui)
+install(FILES "imgui/backends/imgui_impl_opengl3.h" DESTINATION include/imgui)
 
 endif()
 
