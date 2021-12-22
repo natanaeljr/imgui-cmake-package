@@ -9,8 +9,8 @@ option(BUILD_SHARED_LIBS "Build shared libraries or set OFF for static"         
 option(IMGUI_DEMO        "Include the ImGui demo window implementation in library" ON)
 
 # Backend implementation options
-set(IMGUI_PLATF_BACKEND  "" CACHE STRING "Platform backend (only glfw for now)")
-set(IMGUI_RENDER_BACKEND "" CACHE STRING "Graphics Library backend (only opengl for now")
+set(IMGUI_PLATF_BACKEND  "" CACHE STRING "Platform backend (glfw, android)")
+set(IMGUI_RENDER_BACKEND "" CACHE STRING "Graphics Library backend (opengl, opengles3")
 set(IMGUI_OPENGL_LOADER  "" CACHE STRING "OpenGL loader if selected (glad or glbinding3)")
 
 # Option validations
@@ -70,10 +70,36 @@ install(FILES "imgui/backends/imgui_impl_glfw.h" DESTINATION include/imgui)
 endif()
 
 #########################################################################################
+# Platform Backend Android
+#########################################################################################
+if(IMGUI_PLATF_BACKEND STREQUAL "android")
+message(STATUS "ImGui selected Platform Backend: Android")
+
+if(BUILD_SHARED_LIBS)
+add_library(imgui_android SHARED)
+else()
+add_library(imgui_android STATIC)
+endif()
+target_sources(imgui_android PRIVATE "imgui/backends/imgui_impl_android.cpp")
+target_include_directories(imgui_android PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/imgui>
+    $<INSTALL_INTERFACE:include>)
+target_link_libraries(imgui_android PUBLIC android)
+
+install(TARGETS imgui_android EXPORT imguiTargets)
+install(FILES "imgui/backends/imgui_impl_android.h" DESTINATION include/imgui)
+
+endif()
+
+#########################################################################################
 # Render Backend OpenGL
 #########################################################################################
+if(IMGUI_RENDER_BACKEND STREQUAL "opengl" OR IMGUI_RENDER_BACKEND STREQUAL "opengles3")
 if(IMGUI_RENDER_BACKEND STREQUAL "opengl")
 message(STATUS "ImGui selected Rederer Backend: OpenGL")
+else()
+message(STATUS "ImGui selected Rederer Backend: OpenGL ES 3")
+endif()
 
 if(BUILD_SHARED_LIBS)
 add_library(imgui_opengl SHARED)
@@ -84,6 +110,11 @@ target_sources(imgui_opengl PRIVATE "imgui/backends/imgui_impl_opengl3.cpp")
 target_include_directories(imgui_opengl PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/imgui>
     $<INSTALL_INTERFACE:include>)
+
+# Opengl ES3:
+if(IMGUI_RENDER_BACKEND STREQUAL "opengles3")
+target_compile_definitions(imgui_opengl PUBLIC IMGUI_IMPL_OPENGL_ES3)
+endif()
 
 # Opengl Loader: GLAD
 if(IMGUI_OPENGL_LOADER STREQUAL "glad")
@@ -105,7 +136,6 @@ install(TARGETS imgui_opengl EXPORT imguiTargets)
 install(FILES "imgui/backends/imgui_impl_opengl3.h" DESTINATION include/imgui)
 
 endif()
-
 
 #########################################################################################
 # Package Configuration
