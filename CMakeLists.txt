@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(imgui VERSION 1.85)
+project(imgui VERSION 1.88)
 
 #########################################################################################
 # ImGui Options
